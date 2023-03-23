@@ -12,6 +12,9 @@ app.get("/", (req, res) => {
 app.get("/hi", (req, res) => {
     res.send("Hello!!!");
 });
+app.get("/api", (req, res) => {
+    res.json({ users: ["user1", "user2", "user3"] });
+});
 app.listen(port, () => {
     console.log(`now listening on port ${port}`);
 });
