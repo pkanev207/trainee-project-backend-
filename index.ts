@@ -1,5 +1,5 @@
 import express, { type Express, type Request, type Response } from "express";
-const port = 3000;
+const port = 5000;
 
 const app: Express = express();
 
