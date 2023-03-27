@@ -29,16 +29,31 @@ export const createBook = asyncHandler(async (req, res) => {
 // @route PUT/api/books/:id
 // @access Private
 export const updateBook = asyncHandler(async (req, res) => {
-  console.log(req.body);
-  console.log(req.params.id);
-  res.status(200).json({ message: "Edit books!!" });
+  const book = await Book.findById(req.params.id);
+  console.log(typeof book, book);
+  if (book == null) {
+    res.status(400);
+    throw new Error("Book not found");
+  }
+
+  const updatedBook = await Book.findByIdAndUpdate(req.params.id, req.body, {
+    new: true,
+  });
+
+  res.json(updatedBook);
 });
 
 // @desc Delete book
 // @route DELETE/api/books/:id
 // @access Private
 export const deleteBook = asyncHandler(async (req, res) => {
-  console.log(req.body);
-  console.log(req.params.id);
-  res.status(200).json({ message: "Deleted book!!" });
+  const book = await Book.findById(req.params.id);
+
+  if (book == null) {
+    res.status(400);
+    throw new Error("Book not found");
+  }
+
+  await Book.findByIdAndDelete(req.params.id);
+  res.status(200).json({ message: `Deleted book ${req.params.id}` });
 });

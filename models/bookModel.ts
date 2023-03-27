@@ -6,6 +6,11 @@ const bookSchema = new mongoose.Schema(
       type: String,
       required: [true, "Please add a title"],
     },
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      required: true,
+      ref: "User",
+    },
   },
   {
     timestamps: true,
