@@ -23,7 +23,3 @@ npm run server
 ```
 
 ### Others
-
-turned on in VSCode:
-"javascript.preferences.importModuleSpecifierEnding": "js",
-"typescript.preferences.importModuleSpecifierEnding": "js",
