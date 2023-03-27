@@ -1,20 +1,17 @@
-import express, { type Express, type Request, type Response } from "express";
-const port = 5000;
+import express, { type Express } from "express";
+import cors from "cors";
+import booksRouter from "./routes/booksRoutes";
+// import dotenv from "dotenv";
+// const PORT = process.env.PORT || 5000;
+const PORT = 5000;
 
 const app: Express = express();
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(cors());
 
-app.get("/", (req: Request, res: Response) => {
-  res.send("Hello from Express with TS!!!!!");
-});
+app.use("/api/books", booksRouter);
 
-app.get("/hi", (req: Request, res: Response) => {
-  res.send("Hello!!!");
-});
-
-app.get("/api", (req: Request, res: Response) => {
-  res.json({ users: ["user1", "user2", "user3"] });
-});
-
-app.listen(port, () => {
-  console.log(`now listening on port ${port}`);
+app.listen(PORT, () => {
+  console.log(`now listening on port`, PORT);
 });
