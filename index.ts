@@ -1,6 +1,7 @@
 import express, { type Express } from "express";
 import cors from "cors";
 import booksRouter from "./routes/booksRoutes";
+import userRouter from "./routes/userRoutes";
 import { errorHandler } from "./middleware/errorMiddleware";
 import { connectDB } from "./config/db";
 // import dotenv from "dotenv";
@@ -20,6 +21,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cors());
 
 app.use("/api/books", booksRouter);
+app.use("/api/users", userRouter);
 app.use(errorHandler);
 
 app.listen(PORT, () => {
