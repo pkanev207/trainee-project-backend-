@@ -4,8 +4,9 @@ import booksRouter from "./routes/booksRoutes";
 import { errorHandler } from "./middleware/errorMiddleware";
 import { connectDB } from "./config/db";
 // import dotenv from "dotenv";
-// const PORT = process.env.PORT || 5000;
-const PORT = 5000;
+import "dotenv/config";
+const PORT = process.env.PORT;
+// const PORT = 5000;
 
 connectDB()
   .then()

@@ -1,5 +1,7 @@
 import mongoose from "mongoose";
 
+const EMAIL_PATTERN = /^([a-zA-Z]+)@([a-zA-Z]+)\.([a-zA-Z]+)$/;
+
 const userSchema = new mongoose.Schema(
   {
     name: {
@@ -8,7 +10,14 @@ const userSchema = new mongoose.Schema(
     },
     email: {
       type: String,
-      required: [true, "Please provide an email"],
+      required: [true, "Please add an email"],
+      unique: true,
+      validate: {
+        validator(value: string) {
+          return EMAIL_PATTERN.test(value);
+        },
+        message: "Please enter a valid email",
+      },
     },
     password: {
       type: String,
