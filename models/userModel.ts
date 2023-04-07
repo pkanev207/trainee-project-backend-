@@ -1,7 +1,6 @@
 import mongoose from "mongoose";
 
 const EMAIL_PATTERN = /^([a-zA-Z]+)@([a-zA-Z]+)\.([a-zA-Z]+)$/;
-
 const userSchema = new mongoose.Schema(
   {
     name: {
@@ -35,9 +34,3 @@ const userSchema = new mongoose.Schema(
 );
 
 export const User = mongoose.model("User", userSchema);
-
-// export interface UserInput {
-//   email: string;
-//   firstName: string;
-//   password: string;
-// }

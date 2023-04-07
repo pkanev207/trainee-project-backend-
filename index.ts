@@ -4,11 +4,9 @@ import booksRouter from "./routes/booksRoutes";
 import userRouter from "./routes/userRoutes";
 import { errorHandler } from "./middleware/errorMiddleware";
 import { connectDB } from "./config/db";
-// import dotenv from "dotenv";
 import "dotenv/config";
-const PORT = process.env.PORT;
+const PORT = process.env.PORT ?? 5000;
 // const PORT = 5000;
-
 connectDB()
   .then()
   .catch((e) => {
@@ -16,6 +14,7 @@ connectDB()
   });
 
 const app: Express = express();
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cors());

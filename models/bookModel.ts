@@ -1,7 +1,6 @@
 import mongoose from "mongoose";
 
 const URL_PATTERN = /^https?:\/\/.+$/i;
-
 const bookSchema = new mongoose.Schema(
   {
     title: {

@@ -1,22 +1,37 @@
-// import { Request, Response, NextFunction } from 'express';
+import type { Request, Response, NextFunction } from "express";
+import jwt from "jsonwebtoken";
+import asyncHandler from "express-async-handler";
+import { User } from "../models/userModel.js";
+// const secret = process.env.JWT_SECRET; // not working!
+const secret = "traineeproject123";
+// interface JwtPayload {
+//   _id: string;
+// }
+export const protect = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    let token;
+    if (
+      req?.headers.authorization !== undefined &&
+      req.headers.authorization.startsWith("Bearer")
+    ) {
+      try {
+        // Get token from header
+        token = req.headers.authorization.split(" ")[1];
+        // Verify token
+        const decoded = jwt.verify(token, secret) as any;
+        // Get user from token
+        req.user = await User.findById(decoded.id).select("-password");
+        next();
+      } catch (error) {
+        console.log(error);
+        res.status(401);
+        throw new Error("Not authorized");
+      }
+    }
 
-// // This can be shortened..
-
-// import { Request, Response, NextFunction } from 'express';
-// export const myMiddleware = (req: Request, res: Response, next: NextFunction) => {
-//   ...
-// };
-
-// // to this..
-// import { RequestHandler } from 'express';
-// export const myMiddleware: RequestHandler = (req, res, next) => {
-//   ...
-// };
-
-// // or in case it handles the error object
-// import { ErrorRequestHandler } from 'express';
-// export const myMiddleware: ErrorRequestHandler = (err, req, res, next) => {
-//   ...
-// };
-
-export {};
+    if (token === undefined) {
+      res.status(401);
+      throw new Error("Not authorized, no token");
+    }
+  }
+);

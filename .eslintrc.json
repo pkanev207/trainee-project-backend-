@@ -9,6 +9,7 @@
   "plugins": ["prettier"],
   "overrides": [],
   "parserOptions": {
+    // "parser": "@typescript-eslint/parser",
     "ecmaVersion": "latest",
     "project": "./tsconfig.json"
   },
