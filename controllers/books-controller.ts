@@ -1,5 +1,5 @@
 import asyncHandler from "express-async-handler";
-import { Book } from "../models/bookModel.js";
+import { Book } from "../models/book-model.js";
 
 // @route GET/api/books
 export const getAllBooks = asyncHandler(async (req, res) => {

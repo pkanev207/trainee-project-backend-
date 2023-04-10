@@ -2,7 +2,7 @@ import type { Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import asyncHandler from "express-async-handler";
-import { User } from "../models/userModel.js";
+import { User } from "../models/user-model.js";
 // const secret = process.env.JWT_SECRET; // not working!
 const secret = "traineeproject123";
 

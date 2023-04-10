@@ -5,8 +5,8 @@ import {
   updateBook,
   deleteBook,
   getUserBooks,
-} from "..//controllers/booksController.js";
-import { protect } from "../middleware/authMiddleware.js";
+} from "../controllers/books-controller.js";
+import { protect } from "../middleware/auth-middleware.js";
 
 const router = express.Router();
 router.route("/").get(getAllBooks).post(protect, createBook);

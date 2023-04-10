@@ -1,8 +1,8 @@
 import express, { type Express } from "express";
 import cors from "cors";
-import booksRouter from "./routes/booksRoutes";
-import userRouter from "./routes/userRoutes";
-import { errorHandler } from "./middleware/errorMiddleware";
+import booksRouter from "./routes/books-routes";
+import userRouter from "./routes/user-routes";
+import { errorHandler } from "./middleware/error-middleware";
 import { connectDB } from "./config/db";
 import "dotenv/config";
 const PORT = process.env.PORT ?? 5000;
