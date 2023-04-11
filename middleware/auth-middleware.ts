@@ -1,9 +1,13 @@
+import "dotenv/config";
 import type { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import asyncHandler from "express-async-handler";
 import { User } from "../models/user-model.js";
-// const secret = process.env.JWT_SECRET; // not working!
-const secret = "traineeproject123";
+import env from "../util/validate-env.js";
+
+const secret = env.JWT_SECRET;
+// const secret = process.env.JWT_SECRET ?? "traineeproject123";
+
 // interface JwtPayload {
 //   _id: string;
 // }

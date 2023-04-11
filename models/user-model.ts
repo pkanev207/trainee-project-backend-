@@ -27,6 +27,16 @@ const userSchema = new mongoose.Schema(
       default: "user",
       enum: ["admin", "user"],
     },
+    currentBooks: {
+      type: [mongoose.Schema.Types.ObjectId],
+      ref: "Book",
+      default: [],
+    },
+    likedBooks: {
+      type: [mongoose.Schema.Types.ObjectId],
+      ref: "Book",
+      default: [],
+    },
   },
   {
     timestamps: true,

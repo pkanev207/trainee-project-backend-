@@ -1,12 +1,16 @@
+// import * as dotenv from "dotenv";
 import express, { type Express } from "express";
 import cors from "cors";
 import booksRouter from "./routes/books-routes";
 import userRouter from "./routes/user-routes";
 import { errorHandler } from "./middleware/error-middleware";
 import { connectDB } from "./config/db";
-import "dotenv/config";
-const PORT = process.env.PORT ?? 5000;
-// const PORT = 5000;
+import env from "./util/validate-env";
+// import "dotenv/config";
+// dotenv.config();
+const PORT = env.PORT;
+// const PORT = process.env.PORT ?? 5000;
+
 connectDB()
   .then()
   .catch((e) => {
