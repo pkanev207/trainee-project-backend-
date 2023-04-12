@@ -1,36 +1,38 @@
 import asyncHandler from "express-async-handler";
-import { Book } from "../models/book-model.js";
+import type { RequestHandler } from "express";
+// import { Book } from "../models/book-model.js";
+import Book from "../models/book-model";
 
 // @route GET/api/books
-export const getAllBooks = asyncHandler(async (req, res) => {
+export const getAllBooks: RequestHandler = asyncHandler(async (req, res) => {
   const books = await Book.find().populate("user", ["name", "role"]);
   res.status(200).json({ books });
 });
 
 // @route GET/api/books/:id
-export const getBookById = asyncHandler(async (req, res) => {
+export const getBookById: RequestHandler = asyncHandler(async (req, res) => {
   const book = await Book.findById(req.params.id);
   if (book === undefined || book === null) {
     res.status(400);
     throw new Error("Book not found");
   }
   // Check for user
-  if (req.user === undefined || req.user === null) {
-    res.status(401);
-    throw new Error("User not found");
-  }
+  // if (req.user === undefined || req.user === null) {
+  //   res.status(401);
+  //   throw new Error("User not found");
+  // }
 
   res.status(200).json({ book });
 });
 
 // @route GET/api/books/user
-export const getUserBooks = asyncHandler(async (req, res) => {
+export const getUserBooks: RequestHandler = asyncHandler(async (req, res) => {
   const books = await Book.find({ user: req.user.id });
   res.status(200).json({ books });
 });
 
 // @route POST/api/books
-export const createBook = asyncHandler(async (req, res) => {
+export const createBook: RequestHandler = asyncHandler(async (req, res) => {
   if (
     req.body.title === undefined ||
     req.body.description === undefined ||
@@ -49,11 +51,11 @@ export const createBook = asyncHandler(async (req, res) => {
     user: req.user.id,
   });
 
-  res.status(200).json(book);
+  res.status(201).json(book);
 });
 
 // @route PUT/api/books/:id
-export const updateBook = asyncHandler(async (req, res) => {
+export const updateBook: RequestHandler = asyncHandler(async (req, res) => {
   const book = (await Book.findById(req.params.id)) ?? undefined;
   if (book === undefined) {
     res.status(400);
@@ -75,7 +77,7 @@ export const updateBook = asyncHandler(async (req, res) => {
 });
 
 // @route DELETE/api/books/:id
-export const deleteBook = asyncHandler(async (req, res) => {
+export const deleteBook: RequestHandler = asyncHandler(async (req, res) => {
   const book = await Book.findById(req.params.id);
   if (book === undefined) {
     res.status(400);

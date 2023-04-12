@@ -1,5 +1,11 @@
-// import { Request, Response, NextFunction } from 'express';
-export const errorHandler = (err: any, req: any, res: any, next: any): void => {
+import type { Request, Response, NextFunction } from "express";
+
+export const errorHandler = (
+  err: any,
+  req: Request,
+  res: Response,
+  next: NextFunction
+): void => {
   if (res.statusCode === undefined) {
     res.status(500);
   }

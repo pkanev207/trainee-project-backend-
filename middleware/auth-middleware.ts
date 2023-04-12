@@ -1,10 +1,14 @@
 import "dotenv/config";
+// import * as dotenv from "dotenv";
 import type { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import asyncHandler from "express-async-handler";
-import { User } from "../models/user-model.js";
+// import { User } from "../models/user-model.js";
+import User from "../models/user-model.js";
 import env from "../util/validate-env.js";
 
+// dotenv.config();
+// const PORT = process.env.PORT ?? 5000;
 const secret = env.JWT_SECRET;
 // const secret = process.env.JWT_SECRET ?? "traineeproject123";
 
