@@ -1,19 +1,25 @@
+import { isValidObjectId } from "mongoose";
 import asyncHandler from "express-async-handler";
 import type { RequestHandler } from "express";
-// import { Book } from "../models/book-model.js";
 import Book from "../models/book-model";
+// import { type ObjectId } from "mongodb";
 
 // @route GET/api/books
 export const getAllBooks: RequestHandler = asyncHandler(async (req, res) => {
-  const books = await Book.find().populate("user", ["name", "role"]);
+  const books = await Book.find().populate("user", ["name", "role"]).lean();
   res.status(200).json({ books });
 });
 
 // @route GET/api/books/:id
 export const getBookById: RequestHandler = asyncHandler(async (req, res) => {
+  // const book = await validateBook(req.params._id, res);
+  if (!isValidObjectId(req.params.id)) {
+    res.status(400);
+    throw new Error("Invalid book id");
+  }
   const book = await Book.findById(req.params.id);
   if (book === undefined || book === null) {
-    res.status(400);
+    res.status(404);
     throw new Error("Book not found");
   }
   // Check for user
@@ -28,11 +34,27 @@ export const getBookById: RequestHandler = asyncHandler(async (req, res) => {
 // @route GET/api/books/user
 export const getUserBooks: RequestHandler = asyncHandler(async (req, res) => {
   const books = await Book.find({ user: req.user.id });
+  if (books === undefined || books === null) {
+    res.status(404);
+    throw new Error("Books not found");
+  }
   res.status(200).json({ books });
 });
 
+interface CreateBookBody {
+  title?: string;
+  description?: string;
+  imgUrl?: string;
+  author?: string;
+}
+
 // @route POST/api/books
-export const createBook: RequestHandler = asyncHandler(async (req, res) => {
+export const createBook: RequestHandler<
+  unknown,
+  unknown,
+  CreateBookBody,
+  unknown
+> = asyncHandler(async (req, res) => {
   if (
     req.body.title === undefined ||
     req.body.description === undefined ||
@@ -54,11 +76,31 @@ export const createBook: RequestHandler = asyncHandler(async (req, res) => {
   res.status(201).json(book);
 });
 
+interface UpdateBookParams {
+  id: string;
+}
+
+interface UpdateBookBody {
+  title?: string;
+  description?: string;
+  imgUrl?: string;
+  author?: string;
+}
+
 // @route PUT/api/books/:id
-export const updateBook: RequestHandler = asyncHandler(async (req, res) => {
-  const book = (await Book.findById(req.params.id)) ?? undefined;
-  if (book === undefined) {
+export const updateBook: RequestHandler<
+  UpdateBookParams,
+  unknown,
+  UpdateBookBody,
+  unknown
+> = asyncHandler(async (req, res) => {
+  if (!isValidObjectId(req.params.id)) {
     res.status(400);
+    throw new Error("Invalid book id");
+  }
+  const book = await Book.findById(req.params.id);
+  if (book === undefined || book === null) {
+    res.status(404);
     throw new Error("Book not found");
   }
   // Check for user
@@ -71,16 +113,23 @@ export const updateBook: RequestHandler = asyncHandler(async (req, res) => {
     res.status(401);
     throw new Error("User not authorized");
   }
+  // create new if there is no such book
   // const updatedBook = await Book.findByIdAndUpdate(req.params.id, req.body, {new: true,});
-  const updatedBook = await Book.findByIdAndUpdate(req.params.id, req.body);
-  res.json(updatedBook); // sending the old book ?
+  // sending the old book ?
+  // res.json(await Book.findByIdAndUpdate(req.params.id, req.body));
+  await Book.findByIdAndUpdate(req.params.id, req.body);
+  res.json(await Book.findById(req.params.id));
 });
 
 // @route DELETE/api/books/:id
 export const deleteBook: RequestHandler = asyncHandler(async (req, res) => {
-  const book = await Book.findById(req.params.id);
-  if (book === undefined) {
+  if (!isValidObjectId(req.params.id)) {
     res.status(400);
+    throw new Error("Invalid book id");
+  }
+  const book = await Book.findById(req.params.id);
+  if (book === undefined || book === null) {
+    res.status(404);
     throw new Error("Book not found");
   }
   // Check for user
@@ -97,3 +146,45 @@ export const deleteBook: RequestHandler = asyncHandler(async (req, res) => {
   await Book.findByIdAndDelete(req.params.id);
   res.status(200).json({ message: `Delete Book ${req.params.id}` });
 });
+
+// interface bookShape {
+//   _id: ObjectId;
+//   title?: string;
+//   description?: string;
+//   imgUrl?: string;
+//   author?: string;
+//   user?: Types.ObjectId;
+//   userName?: string;
+//   createdAt: Date;
+//   updatedAt: Date;
+// }
+
+// async function validateBook(id: string, res: Response): Promise<bookShape> {
+//   if (!isValidObjectId(id)) {
+//     res.status(400);
+//     throw new Error("Invalid book id");
+//   }
+//   const book = await Book.findById(id);
+//   if (book === undefined || book === null) {
+//     res.status(404);
+//     throw new Error("Book not found");
+//   }
+
+//   return book;
+// }
+
+// RequestHandler<params, res.body, req.body, queries>
+
+// for joining two models
+// async function createModel(trip) {
+//     const result = new Model(trip);
+//     await result.save();
+//     // after creation in order to have id
+//     const user = await User.findById(result.owner);
+//     user.models.push(result._id);
+//     await user.save();
+
+//     return result;
+// }
+
+// .sendStatus || .status.json

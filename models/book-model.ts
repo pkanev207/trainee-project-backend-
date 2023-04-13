@@ -35,6 +35,16 @@ const bookSchema = new mongoose.Schema(
     userName: {
       type: String,
     },
+    likes: {
+      type: [mongoose.Schema.Types.ObjectId],
+      ref: "User",
+      default: [],
+    },
+    uploadedByUsers: {
+      type: [mongoose.Schema.Types.ObjectId],
+      ref: "User",
+      default: [],
+    },
   },
   {
     timestamps: true,
@@ -43,4 +53,5 @@ const bookSchema = new mongoose.Schema(
 
 // export const Book = mongoose.model("Book", bookSchema);
 type Book = mongoose.InferSchemaType<typeof bookSchema>;
+
 export default mongoose.model<Book>("Book", bookSchema);

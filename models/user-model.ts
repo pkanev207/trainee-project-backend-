@@ -27,7 +27,17 @@ const userSchema = new mongoose.Schema(
       default: "user",
       enum: ["admin", "user"],
     },
+    finishedBooks: {
+      type: [mongoose.Schema.Types.ObjectId],
+      ref: "Book",
+      default: [],
+    },
     currentBooks: {
+      type: [mongoose.Schema.Types.ObjectId],
+      ref: "Book",
+      default: [],
+    },
+    futureBooks: {
       type: [mongoose.Schema.Types.ObjectId],
       ref: "Book",
       default: [],
@@ -45,4 +55,5 @@ const userSchema = new mongoose.Schema(
 
 // export const User = mongoose.model("User", userSchema);
 type User = mongoose.InferSchemaType<typeof userSchema>;
+
 export default mongoose.model<User>("User", userSchema);
