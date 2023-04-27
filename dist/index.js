@@ -17,8 +17,8 @@ const validate_env_1 = __importDefault(require("./util/validate-env"));
     app.use(express_1.default.json());
     app.use(express_1.default.urlencoded({ extended: false }));
     app.use((0, cors_1.default)());
-    app.use("/api/books", books_routes_1.default);
     app.use("/api/users", user_routes_1.default);
+    app.use("/api/books", books_routes_1.default);
     app.use((req, res, next) => {
         next(new Error("Endpoint not found"));
     });

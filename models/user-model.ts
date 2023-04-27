@@ -17,10 +17,12 @@ const userSchema = new mongoose.Schema(
         },
         message: "Please enter a valid email",
       },
+      select: false,
     },
     password: {
       type: String,
       required: [true, "Please add a password"],
+      select: false,
     },
     role: {
       type: String,

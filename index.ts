@@ -15,8 +15,8 @@ connectDB()
     app.use(express.urlencoded({ extended: false }));
     app.use(cors());
 
-    app.use("/api/books", booksRouter);
     app.use("/api/users", userRouter);
+    app.use("/api/books", booksRouter);
 
     app.use((req, res, next) => {
       next(new Error("Endpoint not found"));
