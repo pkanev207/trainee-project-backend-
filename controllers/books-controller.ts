@@ -23,10 +23,10 @@ export const getBookById: RequestHandler = asyncHandler(async (req, res) => {
     throw new Error("Book not found");
   }
   // Check for user
-  // if (req.user === undefined || req.user === null) {
-  //   res.status(401);
-  //   throw new Error("User not found");
-  // }
+  if (req.user === undefined || req.user === null) {
+    res.status(401);
+    throw new Error("User not found");
+  }
 
   res.status(200).json({ book });
 });
