@@ -65,6 +65,11 @@ export const loginUser: RequestHandler<unknown, unknown, ILoginBody, unknown> =
     const { email, password } = req.body;
     // check for user email
     const user = await User.findOne({ email }).select("+email +password");
+    if (user == null) {
+      res.status(400);
+      throw new Error("Invalid user");
+    }
+
     const nativePassword = user?.password;
     if (password === null || password === undefined) {
       throw new Error("Unexpected error: Password is missing");

@@ -9,7 +9,7 @@ const config: Config.InitialOptions = {
   verbose: true,
   collectCoverage: true,
   collectCoverageFrom: [baseDir],
-  testMatch: [baseTestDir ],
+  testMatch: [baseTestDir],
 };
 
 export default config;
