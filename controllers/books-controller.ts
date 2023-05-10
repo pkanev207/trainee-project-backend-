@@ -6,8 +6,48 @@ import Book from "../models/book-model";
 
 // @route GET/api/books
 export const getAllBooks: RequestHandler = asyncHandler(async (req, res) => {
-  const books = await Book.find().populate("user", ["name", "role"]).lean();
+  const books: any = await Book.find()
+    .populate("user", ["name", "role"])
+    .lean();
   res.status(200).json({ books });
+});
+
+// @route GET/api/books/paginated
+export const getAllBooksPaginated = asyncHandler(async (req, res) => {
+  const query = Book.find({});
+
+  let page: number = parseInt(req.query.page as string);
+  if (Number.isNaN(page) || page === 0) {
+    page = 1;
+  }
+
+  let pageSize: number = parseInt(req.query.limit as string);
+  if (Number.isNaN(pageSize) || pageSize === 0) {
+    pageSize = 2;
+  }
+
+  const skip = (page - 1) * pageSize;
+  const total = await Book.countDocuments();
+  const pages = Math.ceil(total / pageSize);
+
+  if (page > pages) {
+    res.status(404);
+    throw new Error("Page not found");
+  }
+
+  // descending order
+  const books = await Book.find().sort({ _id: -1 }).limit(pageSize).skip(skip);
+  console.log(books);
+
+  const result = await query.skip(skip).limit(pageSize);
+
+  res.status(200).json({
+    status: "success",
+    count: result.length,
+    page,
+    pages,
+    data: result,
+  });
 });
 
 // @route GET/api/books/:id
