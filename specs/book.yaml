@@ -1,0 +1,54 @@
+components:
+  schemas:
+    Book:
+      type: object
+      properties:
+        _id:
+          type: string
+          example: 6461dca587ec4071ffb6ad1c
+        title:
+          type: string
+          default: Major Heading
+        description:
+          type: string
+          default: "stringstringstring"
+        imgUrl:
+          type: string
+          default: "https://support.echo360.com/hc/article_attachments/360041256731/Swagger_accessTokenReponse_original.png"
+        author:
+          type: string
+          default: prominent author
+        user:
+          type: object
+          properties:
+            _id:
+              type: string
+              example: 642fea9b6ec5181c3b69de19
+            name:
+              type: string
+            role:
+              type: string
+              enum:
+                - user
+                - poweruser
+                - admin
+              default: user
+          description: |
+            user object is <u>populated</u> only in `getAllBooks` method
+        likes:
+          type: array
+          items:
+            type: string
+        uploadedByUsers:
+          type: array
+          items:
+            type: string
+        userName:
+          type: string
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+        __v:
+          type: number
+      required: [title, description, author, imgUrl]

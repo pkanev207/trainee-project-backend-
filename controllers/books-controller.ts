@@ -138,7 +138,7 @@ export const updateBook: RequestHandler<
     res.status(400);
     throw new Error("Invalid book id");
   }
-  const book = await Book.findById(req.params.id);
+  const book = await Book.findById(req.params.id.trim());
   if (book === undefined || book === null) {
     res.status(404);
     throw new Error("Book not found");

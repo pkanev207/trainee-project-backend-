@@ -1,0 +1,422 @@
+openapi: 3.0.3
+info:
+  version: 0.0.1
+  title: Cool Library Project
+  description: |
+    ## About Us
+    OpenAPI specification for the **CLP** - _Cool Library Project_ - open market product
+    for `educational purposes only`.
+  termsOfService: "https://opensource.org/licenses/MIT"
+  contact:
+    name: API Support
+    url: https://www.ibm.com/blog/why-open-source-isnt-free-support-as-a-best-practice/
+    email: support@support.com
+  license:
+    name: "MIT"
+    url: "https://opensource.org/licenses/MIT"
+x-custom-info:
+  registered user:
+    _id: 642fea9b6ec5181c3b69de19
+    name: "Fred"
+    email: "fred@abv.bg"
+    password: 7654321
+    role: "user"
+    createdAt: 2023-04-07T10:04:11.433+00:00
+    updatedAt: 2023-04-07T10:04:11.433+00:00
+    __v: 0
+externalDocs:
+  description: External documentation
+  url: https://example.com
+servers:
+  - url: "http://localhost:{port}/{var}"
+    variables:
+      port:
+        enum:
+          - "5000"
+          - "3000"
+        default: "5000"
+      var:
+        default: api
+        description: This value is assigned by the service provider
+    description: development server
+tags:
+  - name: Users
+    description: Users related operations
+  - name: Books
+    description: Books related operations
+paths:
+  /books/paginated:
+    get:
+      tags:
+        - Books
+      operationId: getAllBooksPaginated
+      summary: Get all books
+      description: Get all books with pagination and limit per page
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            minimum: 1
+            example: 1
+          description: The number of the current page
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 6
+            example: 2
+          description: The number of books displayed on page
+      responses:
+        "200":
+          description: A list of books
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaginatedBooks"
+        "404":
+          description: Page not found
+  /books:
+    post:
+      tags:
+        - Books
+      operationId: createBook
+      summary: Creates a new book
+      description: Creates new record of a book in the CLP backend
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Book"
+      responses:
+        "201":
+          description: Book created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Book"
+          links:
+            ManipulateByBookId:
+              $ref: "#/components/links/ManipulateByBookId"
+        "400":
+          description: Please add all input fields
+        "401":
+          description: Unauthorized
+
+    get:
+      tags:
+        - Books
+      operationId: getAllBooks
+      summary: Lists all books
+      description: Returns all books in the library
+      deprecated: true
+      responses:
+        "200":
+          description: A list of books
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Book"
+
+  /books/{bookId}:
+    put:
+      tags:
+        - Books
+      operationId: updateBook
+      summary: Updates the book
+      description: Updates and returns a specific book by id
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Book"
+      parameters:
+        - $ref: "#/components/parameters/bookIdPathParam"
+      responses:
+        "200":
+          description: The book was updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Book"
+        "400":
+          # description: Book not found
+          $ref: "#/components/responses/MissingResource"
+        "401":
+          # description: User not found
+          $ref: "#/components/responses/MissingUser"
+        "403":
+          # description: User not authorized
+          $ref: "#/components/responses/MissingPermission"
+
+    delete:
+      tags:
+        - Books
+      operationId: deleteBook
+      summary: Delete Book
+      description: Delete specific book from CLP application
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: bookId
+          description: The id of the book in question
+          in: path
+          schema:
+            type: string
+          required: true
+          examples:
+            testBook:
+              value: 6461dca587ec4071ffb6ad1c
+              summary: Major Heading
+              description: after deleting **create** a new test book
+      responses:
+        "200":
+          description: The book was deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "400":
+          # description: Book not found
+          $ref: "#/components/responses/MissingResource"
+        "401":
+          description: Unauthorized
+
+    get:
+      tags:
+        - Books
+      operationId: getBookById
+      summary: Returns a book
+      description: Returns required book with details by id
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/bookIdPathParam"
+      responses:
+        "200":
+          description: The book
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Book"
+        "400":
+          # description: Book not found
+          $ref: "#/components/responses/MissingResource"
+        "401":
+          # description: User not found
+          $ref: "#/components/responses/MissingUser"
+
+components:
+  schemas:
+    PaginatedBooks:
+      type: object
+      properties:
+        status:
+          type: string
+        count:
+          type: integer
+          default: 2
+        page:
+          type: integer
+          default: 1
+        pages:
+          type: integer
+          default: 2
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/Book"
+
+    Book:
+      type: object
+      minProperties: 4
+      properties:
+        _id:
+          type: string
+          example: 6461eb55c0d90113a28cffbb
+        title:
+          type: string
+          minLength: 4
+          example: Major Heading
+        description:
+          type: string
+          minLength: 10
+          example: "stringstringstring"
+        imgUrl:
+          type: string
+          pattern: '^https?:\/\/.+$'
+          example: "https://support.echo360.com/hc/article_attachments/360041256731/Swagger_accessTokenReponse_original.png"
+        author:
+          type: string
+          example: prominent author
+        user:
+          allOf:
+            - $ref: "#/components/schemas/User"
+            - type: object
+              properties:
+                _id:
+                  type: string
+                name:
+                  type: string
+                role:
+                  type: string
+              description: |
+                user object is <u>populated</u> only in `getAllBooks` method
+        likes:
+          type: array
+          items:
+            type: string
+            example: 642fea9b6ec5181c3b69de19
+        uploadedByUsers:
+          type: array
+          items:
+            type: string
+            example: 642fea9b6ec5181c3b69de19
+        userName:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+          readOnly: true
+        updatedAt:
+          type: string
+          format: date-time
+          readOnly: true
+        __v:
+          type: number
+          format: float
+          readOnly: true
+      required: [title, description, author, imgUrl]
+
+    User:
+      type: object
+      properties:
+        _id:
+          type: string
+          example: 642fea9b6ec5181c3b69de19
+        name:
+          type: string
+          example: Fred
+        email:
+          type: string
+          format: email
+          pattern: '^([a-zA-Z]+)@([a-zA-Z]+)\.([a-zA-Z]+)$'
+          example: fred@abv.bg
+        password:
+          type: string
+          format: password
+          writeOnly: true
+          example: 7654321
+        role:
+          type: string
+          enum:
+            - user
+            - poweruser
+            - admin
+          default: user
+        finishedBooks:
+          type: array
+          items:
+            type: string
+            example: 642ee02ce5d22384d6bc809b
+        likedBooks:
+          type: array
+          items:
+            type: string
+            example: 642ee02ce5d22384d6bc809b
+        createdAt:
+          type: string
+          format: date-time
+          readOnly: true
+        updatedAt:
+          type: string
+          format: date-time
+          readOnly: true
+      required: [name, email, password, role]
+
+  parameters:
+    bookIdPathParam:
+      name: bookId
+      description: The id of the required book
+      in: path
+      schema:
+        type: string
+      required: true
+      example: 6461eb55c0d90113a28cffbb
+
+  responses:
+    InternalServerError:
+      description: |
+        An error occurred while processing the request.
+        Please contact support.
+
+    MissingResource:
+      description: Book not found
+
+    MissingUser:
+      description: User not found
+
+    MissingPermission:
+      description: User not authorized
+
+  links:
+    ManipulateByBookId:
+      description: >
+        The `bookId` value returned in the response can be used 
+        as input parameter in getBookById, updateBook, deleteBook
+      operationId: getBookById, updateBook, deleteBook
+      parameters:
+        bookId: "$response.body#/_id"
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+# $ref: "../responses-api.yaml#/components/responses/GenericError"
+
+# parameters:
+#   - name: bookId
+#     description: The id of the required book
+#     in: query
+#     schema:
+#      # type: integer
+#      # type: number # supports decimal values
+#       type: string
+#       minimum: 100
+#       maximum: 1000
+#     required: true
+#     example: 643e3c6dbeea98d0c341022c
+
+# - name: bookId
+#   description: The id of the required book
+#   in: path
+#   schema:
+#     type: string
+#   required: true
+#   example: 645a3a18850bc9d46477d759
+
+# examples:
+#   test book:
+#     summary: test book for open api docs
+#     value:
+#       _id: 645a3a18850bc9d46477d759
+#       title: Major Heading
+#       description: stringstringstring
+#       imgUrl: https://support.echo360.com/hc/article_attachments/360041256731/Swagger_accessTokenReponse_original.png
+#       author: prominent author
+#       user: 642fea9b6ec5181c3b69de19
+#       createdAt: 2023-05-09T12:18:32.659+00:00
+#       updatedAt: 2023-05-09T12:18:32.659+00:00
+#       __v: 0
