@@ -153,6 +153,7 @@ interface UpdateBookBody {
   title?: string;
   description?: string;
   imgUrl?: string;
+  cloudinaryId?: string;
   author?: string;
 }
 
@@ -182,6 +183,16 @@ export const updateBook: RequestHandler<
     res.status(401);
     throw new Error("User not authorized");
   }
+  // Check for new image upload
+  if (req.files !== null && req.files !== undefined) {
+    // clear the old image
+    await deleteFromCloudinary(req.body.cloudinaryId ?? "");
+    // create new image
+    const response = await uploadToCloudinary(req.files);
+    req.body.imgUrl = response.url;
+    req.body.cloudinaryId = response.cloudinary_id;
+    console.log(req.body.imgUrl, req.body.cloudinaryId);
+  }
 
   const updatedBook = await Book.findByIdAndUpdate(req.params.id, req.body, {
     new: true,
@@ -189,9 +200,6 @@ export const updateBook: RequestHandler<
   });
 
   res.status(200).json(updatedBook);
-  // res.json(await Book.findByIdAndUpdate(req.params.id, req.body));
-  // await Book.findByIdAndUpdate(req.params.id, req.body);
-  // res.json(await Book.findById(req.params.id));
 });
 
 // @route DELETE/api/books/:id
@@ -224,7 +232,7 @@ export const deleteBook: RequestHandler = asyncHandler(async (req, res) => {
   } else {
     try {
       await deleteFromCloudinary(cloudinaryId);
-      cloudinaryRes = "and image";
+      cloudinaryRes = " and image";
     } catch (error) {
       console.error(error);
       // res.status(400);

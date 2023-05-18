@@ -1,9 +1,7 @@
-import "dotenv/config";
-// import * as dotenv from "dotenv";
+// import "dotenv/config";
 import type { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import asyncHandler from "express-async-handler";
-// import { User } from "../models/user-model.js";
 import User from "../models/user-model.js";
 import env from "../util/validate-env.js";
 

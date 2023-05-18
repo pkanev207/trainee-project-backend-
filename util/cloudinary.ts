@@ -18,7 +18,6 @@ interface ICloudinaryParams {
 export const uploadToCloudinary = async (
   data: any
 ): Promise<ICloudinaryParams> => {
-  // destroy old image
   // create image
   const file = data?.image;
   const result = await cloudinary.uploader.upload(file.tempFilePath, {
