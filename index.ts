@@ -8,15 +8,17 @@ import { connectDB } from "./config/db";
 import env from "./util/validate-env";
 import SwaggerUi from "swagger-ui-express";
 import YAML from "js-yaml";
+import fileUpload from "express-fileupload";
 
 connectDB()
   .then(() => {
     const PORT = env.PORT;
     const app: Express = express();
 
-    app.use(express.json());
-    app.use(express.urlencoded({ extended: false }));
     app.use(cors());
+    app.use(express.json());
+    app.use(express.urlencoded({ extended: true }));
+    app.use(fileUpload({ useTempFiles: true, tempFileDir: "/temp/" }));
 
     app.use("/api/users", userRouter);
     app.use("/api/books", booksRouter);
@@ -39,7 +41,6 @@ connectDB()
     });
 
     app.use(errorHandler);
-
     app.listen(PORT, () => {
       console.log(`now listening on port`, PORT);
     });

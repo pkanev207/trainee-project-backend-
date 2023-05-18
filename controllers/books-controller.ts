@@ -3,6 +3,8 @@ import asyncHandler from "express-async-handler";
 import type { RequestHandler } from "express";
 import Book from "../models/book-model";
 // import { type ObjectId } from "mongodb";
+// import cloudinary from "../util/cloudinary";
+import { uploadToCloudinary } from "../util/cloudinary";
 
 // @route GET/api/books
 export const getAllBooks: RequestHandler = asyncHandler(async (req, res) => {
@@ -81,11 +83,23 @@ export const getUserBooks: RequestHandler = asyncHandler(async (req, res) => {
   res.status(200).json({ books });
 });
 
+// @route POST/api/books/images/upload
+export const imageUpload: RequestHandler = asyncHandler(async (req, res) => {
+  console.log("From imageUpload:");
+  console.log(req.body);
+  console.log(req.files);
+  console.log(req.params);
+
+  res.status(200).json(req.body);
+});
+
 interface CreateBookBody {
   title?: string;
   description?: string;
   imgUrl?: string;
+  cloudinaryId?: string;
   author?: string;
+  cover?: HTMLImageElement;
 }
 
 // @route POST/api/books
@@ -95,6 +109,8 @@ export const createBook: RequestHandler<
   CreateBookBody,
   unknown
 > = asyncHandler(async (req, res) => {
+  let imgUrl, cloudinaryId;
+
   if (
     req.body.title === undefined ||
     req.body.description === undefined ||
@@ -105,14 +121,28 @@ export const createBook: RequestHandler<
     throw new Error("Please add all input fields");
   }
 
+  if (req.files !== null && req.files !== undefined) {
+    const response = await uploadToCloudinary(req.files);
+    imgUrl = response.url;
+    cloudinaryId = response.cloudinary_id;
+    console.log(imgUrl, cloudinaryId);
+  } else {
+    cloudinaryId = "none";
+    imgUrl = req.body.imgUrl;
+    // res.status(400);
+    // throw new Error("No image was uploaded");
+  }
+
   const book = await Book.create({
     title: req.body.title,
     description: req.body.description,
-    imgUrl: req.body.imgUrl,
+    imgUrl,
+    cloudinaryId,
     author: req.body.author,
     user: req.user.id,
   });
 
+  // res.status(201).json(book);
   res.status(201).json(book);
 });
 
@@ -153,12 +183,16 @@ export const updateBook: RequestHandler<
     res.status(401);
     throw new Error("User not authorized");
   }
-  // create new if there is no such book
-  // const updatedBook = await Book.findByIdAndUpdate(req.params.id, req.body, {new: true,});
-  // sending the old book ?
+
+  const updatedBook = await Book.findByIdAndUpdate(req.params.id, req.body, {
+    new: true,
+    runValidators: true,
+  });
+
+  res.status(200).json(updatedBook);
   // res.json(await Book.findByIdAndUpdate(req.params.id, req.body));
-  await Book.findByIdAndUpdate(req.params.id, req.body);
-  res.json(await Book.findById(req.params.id));
+  // await Book.findByIdAndUpdate(req.params.id, req.body);
+  // res.json(await Book.findById(req.params.id));
 });
 
 // @route DELETE/api/books/:id
@@ -192,6 +226,7 @@ export const deleteBook: RequestHandler = asyncHandler(async (req, res) => {
 //   title?: string;
 //   description?: string;
 //   imgUrl?: string;
+//   cloudinaryId: string;
 //   author?: string;
 //   user?: Types.ObjectId;
 //   userName?: string;

@@ -4,6 +4,7 @@ import {
   getAllBooksPaginated,
   getBookById,
   getUserBooks,
+  imageUpload,
   createBook,
   updateBook,
   deleteBook,
@@ -11,6 +12,7 @@ import {
 import { protect } from "../middleware/auth-middleware.js";
 
 const router = express.Router();
+
 router.route("/").get(getAllBooks).post(protect, createBook);
 router.route("/user").get(protect, getUserBooks);
 router.route("/paginated").get(getAllBooksPaginated);
@@ -19,5 +21,7 @@ router
   .get(protect, getBookById)
   .put(protect, updateBook)
   .delete(protect, deleteBook);
+
+router.post("/images/upload", imageUpload);
 
 export default router;

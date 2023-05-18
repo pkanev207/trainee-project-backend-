@@ -243,7 +243,7 @@ components:
       properties:
         _id:
           type: string
-          example: 6461eb55c0d90113a28cffbb
+          example: 6465fd5e8b79aeba60353ed3
         title:
           type: string
           minLength: 4
@@ -255,7 +255,10 @@ components:
         imgUrl:
           type: string
           pattern: '^https?:\/\/.+$'
-          example: "https://support.echo360.com/hc/article_attachments/360041256731/Swagger_accessTokenReponse_original.png"
+          example: "http://res.cloudinary.com/dvc5yczyt/image/upload/v1684405597/testImageUpload/tsd2am14fycu6vf0ukjy.avif"
+        cloudinaryId:
+          type: string
+          example: testImageUpload/tsd2am14fycu6vf0ukjy
         author:
           type: string
           example: prominent author

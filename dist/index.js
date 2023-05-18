@@ -13,13 +13,15 @@ const db_1 = require("./config/db");
 const validate_env_1 = __importDefault(require("./util/validate-env"));
 const swagger_ui_express_1 = __importDefault(require("swagger-ui-express"));
 const js_yaml_1 = __importDefault(require("js-yaml"));
+const express_fileupload_1 = __importDefault(require("express-fileupload"));
 (0, db_1.connectDB)()
     .then(() => {
     const PORT = validate_env_1.default.PORT;
     const app = (0, express_1.default)();
-    app.use(express_1.default.json());
-    app.use(express_1.default.urlencoded({ extended: false }));
     app.use((0, cors_1.default)());
+    app.use(express_1.default.json());
+    app.use(express_1.default.urlencoded({ extended: true }));
+    app.use((0, express_fileupload_1.default)({ useTempFiles: true, tempFileDir: "/temp/" }));
     app.use("/api/users", user_routes_1.default);
     app.use("/api/books", books_routes_1.default);
     try {

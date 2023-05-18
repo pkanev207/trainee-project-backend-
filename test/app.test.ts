@@ -16,6 +16,7 @@ describe("App integration tests", () => {
     description: "someDescription",
     imgUrl:
       "https://plus.unsplash.com/premium_photo-1669652639337-c513cc42ead6?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80",
+    cloudinaryId: "someCloudinaryId",
     author: "someAuthor",
     user: "someUserId",
     userName: "someUserName",

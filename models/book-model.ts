@@ -14,6 +14,7 @@ const bookSchema = new mongoose.Schema(
       required: [true, "Please add a description"],
       minlength: [10, "Description must be at least 10 characters long!"],
     },
+    // image: { type: Object, required: false },
     imgUrl: {
       type: String,
       required: true,
@@ -22,6 +23,7 @@ const bookSchema = new mongoose.Schema(
         message: "Please add image url",
       },
     },
+    cloudinaryId: { type: String, required: true },
     author: {
       type: String,
       required: true,
