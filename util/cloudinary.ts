@@ -27,3 +27,7 @@ export const uploadToCloudinary = async (
   // return url, id, name
   return { cloudinary_id: result.public_id ?? "", url: result.url ?? "" };
 };
+
+export const deleteFromCloudinary = async (id: string): Promise<string> => {
+  return await cloudinary.uploader.destroy(id);
+};

@@ -3,8 +3,7 @@ import asyncHandler from "express-async-handler";
 import type { RequestHandler } from "express";
 import Book from "../models/book-model";
 // import { type ObjectId } from "mongodb";
-// import cloudinary from "../util/cloudinary";
-import { uploadToCloudinary } from "../util/cloudinary";
+import { uploadToCloudinary, deleteFromCloudinary } from "../util/cloudinary";
 
 // @route GET/api/books
 export const getAllBooks: RequestHandler = asyncHandler(async (req, res) => {
@@ -201,6 +200,7 @@ export const deleteBook: RequestHandler = asyncHandler(async (req, res) => {
     res.status(400);
     throw new Error("Invalid book id");
   }
+  // Find the book
   const book = await Book.findById(req.params.id);
   if (book === undefined || book === null) {
     res.status(404);
@@ -216,9 +216,28 @@ export const deleteBook: RequestHandler = asyncHandler(async (req, res) => {
     res.status(401);
     throw new Error("User not authorized");
   }
+  // Delete Cloudinary image
+  const cloudinaryId = book.cloudinaryId;
+  let cloudinaryRes: string = "";
+  if (cloudinaryId === "none") {
+    cloudinaryRes = " image missing required parameter - public_id";
+  } else {
+    try {
+      await deleteFromCloudinary(cloudinaryId);
+      cloudinaryRes = "and image";
+    } catch (error) {
+      console.error(error);
+      // res.status(400);
+      // throw new Error("Missing required parameter - public_id");
+      // window.alert(error.name);
+      cloudinaryRes = "image missing required parameter - public_id";
+    }
+  }
 
   await Book.findByIdAndDelete(req.params.id);
-  res.status(200).json({ message: `Delete Book ${req.params.id}` });
+  res
+    .status(200)
+    .json({ message: `Deleted Book ${req.params.id}${cloudinaryRes}` });
 });
 
 // interface bookShape {

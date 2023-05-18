@@ -21,7 +21,11 @@ const express_fileupload_1 = __importDefault(require("express-fileupload"));
     app.use((0, cors_1.default)());
     app.use(express_1.default.json());
     app.use(express_1.default.urlencoded({ extended: true }));
-    app.use((0, express_fileupload_1.default)({ useTempFiles: true, tempFileDir: "/temp/" }));
+    app.use((0, express_fileupload_1.default)({
+        useTempFiles: true,
+        tempFileDir: "/temp/",
+        limits: { fileSize: 50 * 1024 * 1024 },
+    }));
     app.use("/api/users", user_routes_1.default);
     app.use("/api/books", books_routes_1.default);
     try {

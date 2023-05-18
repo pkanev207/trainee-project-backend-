@@ -126,7 +126,9 @@ describe("App integration tests", () => {
 
     const result = await deleteResult.json();
     expect(deleteResult.status).toBe(200);
-    expect(result.message).toBe(`Delete Book ${createdBookId}`);
+    expect(result.message).toBe(
+      `Deleted Book ${createdBookId} image missing required parameter - public_id`
+    );
 
     const getBook = await fetch(baseUrl + `/books/${createdBookId}`, {
       method: "GET",
