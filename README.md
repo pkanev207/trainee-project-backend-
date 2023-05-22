@@ -19,7 +19,7 @@ npm install
 ### Run Server
 
 ```
-npm start
+npm run serve
 ```
 
 ### Others

@@ -15,8 +15,6 @@ export const getAllBooks: RequestHandler = asyncHandler(async (req, res) => {
 
 // @route GET/api/books/paginated
 export const getAllBooksPaginated = asyncHandler(async (req, res) => {
-  const query = Book.find({});
-
   let page: number = parseInt(req.query.page as string);
   if (Number.isNaN(page) || page === 0) {
     page = 1;
@@ -24,9 +22,8 @@ export const getAllBooksPaginated = asyncHandler(async (req, res) => {
 
   let pageSize: number = parseInt(req.query.limit as string);
   if (Number.isNaN(pageSize) || pageSize === 0) {
-    pageSize = 2;
+    pageSize = 3;
   }
-
   const skip = (page - 1) * pageSize;
   const total = await Book.countDocuments();
   const pages = Math.ceil(total / pageSize);
@@ -36,18 +33,22 @@ export const getAllBooksPaginated = asyncHandler(async (req, res) => {
     throw new Error("Page not found");
   }
 
-  // descending order
-  const books = await Book.find().sort({ _id: -1 }).limit(pageSize).skip(skip);
-  console.log(books);
-
-  const result = await query.skip(skip).limit(pageSize);
+  // const query = Book.find({});
+  // const result = await query.skip(skip).limit(pageSize);
+  // const order: string = req.query.order ?? "dsc"; // descending order
+  const books = await Book.find()
+    .sort({ _id: -1 })
+    .limit(pageSize)
+    .skip(skip)
+    .populate("user", ["name", "role"])
+    .lean();
 
   res.status(200).json({
     status: "success",
-    count: result.length,
-    page,
-    pages,
-    data: result,
+    count: books.length,
+    currentPage: page,
+    numberOfPages: pages,
+    data: books,
   });
 });
 
