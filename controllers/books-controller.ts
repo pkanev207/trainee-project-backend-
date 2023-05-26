@@ -24,32 +24,52 @@ export const getAllBooksPaginated = asyncHandler(async (req, res) => {
   if (Number.isNaN(pageSize) || pageSize === 0) {
     pageSize = 3;
   }
+
+  const searchTerm = req.query.query;
   const skip = (page - 1) * pageSize;
-  const total = await Book.countDocuments();
-  const pages = Math.ceil(total / pageSize);
+
+  let total = await Book.countDocuments();
+  let pages = Math.ceil(total / pageSize);
+  let books = [];
 
   if (page > pages) {
     res.status(404);
     throw new Error("Page not found");
   }
 
-  // const query = Book.find({});
-  // const result = await query.skip(skip).limit(pageSize);
-  // const order: string = req.query.order ?? "dsc"; // descending order
-  const books = await Book.find()
-    .sort({ _id: -1 })
-    .limit(pageSize)
-    .skip(skip)
-    .populate("user", ["name", "role"])
-    .lean();
+  if (searchTerm !== undefined && searchTerm !== "") {
+    total = await Book.count({ title: { $regex: searchTerm, $options: "i" } });
+    pages = Math.ceil(total / pageSize);
+    books = await Book.find({ title: { $regex: searchTerm, $options: "i" } })
+      .skip(skip)
+      .limit(pageSize)
+      .sort({ _id: 1 })
+      .populate("user", ["name", "role"])
+      .lean();
 
-  res.status(200).json({
-    status: "success",
-    count: books.length,
-    currentPage: page,
-    numberOfPages: pages,
-    data: books,
-  });
+    res.status(200).json({
+      status: "success",
+      count: books.length,
+      currentPage: page,
+      numberOfPages: pages,
+      data: books,
+    });
+  } else {
+    books = await Book.find()
+      .skip(skip)
+      .limit(pageSize)
+      .sort({ _id: -1 })
+      .populate("user", ["name", "role"])
+      .lean();
+
+    res.status(200).json({
+      status: "success",
+      count: books.length,
+      currentPage: page,
+      numberOfPages: pages,
+      data: books,
+    });
+  }
 });
 
 // @route GET/api/books/:id
@@ -86,10 +106,6 @@ export const getUserBooks: RequestHandler = asyncHandler(async (req, res) => {
 // @route POST/api/books/images/upload
 export const imageUpload: RequestHandler = asyncHandler(async (req, res) => {
   console.log("From imageUpload:");
-  console.log(req.body);
-  console.log(req.files);
-  console.log(req.params);
-
   res.status(200).json(req.body);
 });
 
@@ -110,6 +126,11 @@ export const createBook: RequestHandler<
   unknown
 > = asyncHandler(async (req, res) => {
   let imgUrl, cloudinaryId;
+
+  if (req.user.role !== "admin") {
+    res.status(403);
+    throw new Error("The user does not have access rights");
+  }
 
   if (
     req.body.title === undefined ||
@@ -142,7 +163,6 @@ export const createBook: RequestHandler<
     user: req.user.id,
   });
 
-  // res.status(201).json(book);
   res.status(201).json(book);
 });
 
