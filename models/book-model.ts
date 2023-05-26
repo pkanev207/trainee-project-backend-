@@ -53,6 +53,11 @@ const bookSchema = new mongoose.Schema(
   }
 );
 
+bookSchema.index(
+  { title: "text", author: "text" },
+  { collation: { locale: "simple" } }
+);
+
 // export const Book = mongoose.model("Book", bookSchema);
 type Book = mongoose.InferSchemaType<typeof bookSchema>;
 
