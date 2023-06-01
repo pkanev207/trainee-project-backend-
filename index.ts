@@ -43,6 +43,8 @@ connectDB()
     }
 
     app.use((req, res, next) => {
+      console.log(req.url);
+
       next(new Error("Endpoint not found"));
     });
 

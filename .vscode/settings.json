@@ -5,6 +5,7 @@
     "envalid",
     "fileupload",
     "prestart",
+    "refreshtoken",
     "traineeproject",
     "tsbuildinfo"
   ]

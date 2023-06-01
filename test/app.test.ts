@@ -1,3 +1,5 @@
+import "dotenv/config";
+
 describe("App integration tests", () => {
   const baseUrl = "http://localhost:5000/api";
 
@@ -6,7 +8,16 @@ describe("App integration tests", () => {
     name: "someName",
     email: "someEmail@abv.bg",
     password: "somePassword",
-    role: ["user"],
+    role: ["admin"],
+    timestamp: "",
+  };
+
+  const someAdmin = {
+    id: "",
+    name: "Tim White",
+    email: "white@abv.bg",
+    password: process.env.ADMIN_PASSWORD,
+    role: ["admin"],
     timestamp: "",
   };
 
@@ -27,10 +38,25 @@ describe("App integration tests", () => {
     __v: 0,
   };
 
-  let token = "";
+  // let token = "";
+  let adminToken = "";
+  let createdUserId = "";
   let createdBookId = "";
 
-  xit("should register new user", async () => {
+  it("should login an admin", async () => {
+    const result = await fetch(baseUrl + "/users/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(someAdmin),
+    });
+    const resultBody = await result.json();
+
+    expect(result.status).toBe(200);
+    expect(resultBody.token).toBeDefined();
+    adminToken = resultBody.token;
+  });
+
+  it("should register new user", async () => {
     const result = await fetch(baseUrl + "/users/register", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -40,10 +66,10 @@ describe("App integration tests", () => {
 
     expect(result.status).toBe(201);
     expect(resultBody.token).toBeDefined();
-    token = resultBody.token;
+    // token = resultBody.token;
   });
 
-  it("should login a register user", async () => {
+  it("should login a registered user", async () => {
     const result = await fetch(baseUrl + "/users/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -53,7 +79,22 @@ describe("App integration tests", () => {
 
     expect(result.status).toBe(200);
     expect(resultBody.token).toBeDefined();
-    token = resultBody.token;
+    // token = resultBody.token;
+    createdUserId = resultBody._id;
+  });
+
+  it("should delete a registered user", async () => {
+    const result = await fetch(baseUrl + "/users/admin/user/" + createdUserId, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${adminToken}`,
+      },
+    });
+    const resultBody = await result.json();
+
+    expect(result.status).toBe(200);
+    expect(resultBody.message).toEqual("User deleted");
   });
 
   it("should create a book if authorized", async () => {
@@ -61,7 +102,7 @@ describe("App integration tests", () => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${adminToken}`,
       },
       body: JSON.stringify(someBook),
     });
@@ -77,7 +118,7 @@ describe("App integration tests", () => {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${adminToken}`,
       },
     });
     const resultBody = await result.json();
@@ -98,7 +139,7 @@ describe("App integration tests", () => {
       }),
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${adminToken}`,
       },
     });
 
@@ -108,7 +149,7 @@ describe("App integration tests", () => {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${adminToken}`,
       },
     });
     const getBookBody = await getBook.json();
@@ -120,7 +161,7 @@ describe("App integration tests", () => {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${adminToken}`,
       },
     });
 
@@ -134,7 +175,7 @@ describe("App integration tests", () => {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${adminToken}`,
       },
     });
 
