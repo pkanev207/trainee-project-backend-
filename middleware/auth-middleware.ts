@@ -5,11 +5,7 @@ import asyncHandler from "express-async-handler";
 import User from "../models/user-model.js";
 import env from "../util/validate-env.js";
 
-// dotenv.config();
-// const PORT = process.env.PORT ?? 5000;
 const secret = env.JWT_SECRET;
-// const secret = process.env.JWT_SECRET ?? "traineeproject123";
-
 // interface JwtPayload {
 //   _id: string;
 // }
@@ -29,7 +25,7 @@ export const protect = asyncHandler(
         req.user = await User.findById(decoded.id).select("-password");
         next();
       } catch (error) {
-        console.log(error);
+        console.error(error);
         res.status(401);
         throw new Error("Not authorized");
       }
@@ -41,3 +37,12 @@ export const protect = asyncHandler(
     }
   }
 );
+
+export const isAdmin = asyncHandler(async (req, res, next) => {
+  if (req?.user?.role !== "admin") {
+    res.status(403);
+    throw new Error("The client does not have access rights");
+  } else {
+    next();
+  }
+});

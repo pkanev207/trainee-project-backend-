@@ -26,7 +26,8 @@ export const getAllBooksPaginated = asyncHandler(async (req, res) => {
   }
 
   const searchTerm = req.query.query;
-  const skip = (page - 1) * pageSize;
+
+  let skip = (page - 1) * pageSize;
 
   let total = await Book.countDocuments();
   let pages = Math.ceil(total / pageSize);
@@ -40,10 +41,16 @@ export const getAllBooksPaginated = asyncHandler(async (req, res) => {
   if (searchTerm !== undefined && searchTerm !== "") {
     total = await Book.count({ title: { $regex: searchTerm, $options: "i" } });
     pages = Math.ceil(total / pageSize);
+
+    if (skip >= total) {
+      skip = 0;
+      page = 1;
+    }
+    // console.log(page, skip, total, pages);
     books = await Book.find({ title: { $regex: searchTerm, $options: "i" } })
+      .sort({ _id: 1 })
       .skip(skip)
       .limit(pageSize)
-      .sort({ _id: 1 })
       .populate("user", ["name", "role"])
       .lean();
 
@@ -56,9 +63,9 @@ export const getAllBooksPaginated = asyncHandler(async (req, res) => {
     });
   } else {
     books = await Book.find()
+      .sort({ _id: -1 })
       .skip(skip)
       .limit(pageSize)
-      .sort({ _id: -1 })
       .populate("user", ["name", "role"])
       .lean();
 
@@ -146,7 +153,7 @@ export const createBook: RequestHandler<
     const response = await uploadToCloudinary(req.files);
     imgUrl = response.url;
     cloudinaryId = response.cloudinary_id;
-    console.log(imgUrl, cloudinaryId);
+    // console.log(imgUrl, cloudinaryId);
   } else {
     cloudinaryId = "none";
     imgUrl = req.body.imgUrl;

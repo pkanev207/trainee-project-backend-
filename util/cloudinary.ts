@@ -22,6 +22,8 @@ export const uploadToCloudinary = async (
   const file = data?.image;
   const result = await cloudinary.uploader.upload(file.tempFilePath, {
     folder: "testImageUpload",
+    width: 150,
+    crop: "scale",
   });
   // return url, id, name
   return { cloudinary_id: result.public_id ?? "", url: result.url ?? "" };

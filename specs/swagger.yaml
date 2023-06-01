@@ -91,6 +91,9 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/Book"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/Book"
       responses:
         "201":
           description: Book created successfully
@@ -252,6 +255,10 @@ components:
           type: string
           minLength: 10
           example: "stringstringstring"
+        image:
+          type: string
+          format: binary
+          nullable: true
         imgUrl:
           type: string
           pattern: '^https?:\/\/.+$'

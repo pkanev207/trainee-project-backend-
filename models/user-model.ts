@@ -1,6 +1,8 @@
 import mongoose from "mongoose";
+import crypto from "crypto";
 
 const EMAIL_PATTERN = /^([a-zA-Z]+)@([a-zA-Z]+)\.([a-zA-Z]+)$/;
+
 const userSchema = new mongoose.Schema(
   {
     name: {
@@ -22,6 +24,7 @@ const userSchema = new mongoose.Schema(
     password: {
       type: String,
       required: [true, "Please add a password"],
+      minLength: [6, "Password should be at least 6 chars"],
       select: false,
     },
     role: {
@@ -49,11 +52,26 @@ const userSchema = new mongoose.Schema(
       ref: "Book",
       default: [],
     },
+    forgotPasswordToken: String,
+    forgotPasswordExpiry: Date,
   },
   {
     timestamps: true,
   }
 );
+
+userSchema.methods.getForgotPasswordToken = function () {
+  const forgotToken = crypto.randomBytes(20).toString("hex");
+  // getting a hash - make sure to get hash on the backend
+  this.forgotPasswordToken = crypto
+    .createHash("sha256")
+    .update(forgotToken)
+    .digest("hex");
+  // time of token 20 minutes
+  this.forgotPasswordExpiry = Date.now() + 20 * 60 * 1000;
+
+  return forgotToken;
+};
 
 // export const User = mongoose.model("User", userSchema);
 type User = mongoose.InferSchemaType<typeof userSchema>;
