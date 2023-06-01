@@ -50,6 +50,7 @@ export const registerUser: RequestHandler<
       _id: user._id,
       name: user.name,
       email: user.email,
+      role: user.role,
       token,
     });
   } else {
@@ -93,6 +94,7 @@ export const loginUser: RequestHandler<unknown, unknown, ILoginBody, unknown> =
         _id: user?.id,
         name: user?.name,
         email: user?.email,
+        role: user?.role,
         token: generateToken(user?._id as any),
       });
     } else {
@@ -216,6 +218,7 @@ export const adminDeleteUser = asyncHandler(async (req, res) => {
     throw new Error("No such user found");
   }
 
+  await User.findByIdAndDelete(req.params.id);
   res.status(200).json({ message: "User deleted" });
 });
 
