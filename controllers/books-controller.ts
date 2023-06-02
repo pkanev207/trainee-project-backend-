@@ -2,7 +2,12 @@ import { isValidObjectId } from "mongoose";
 import asyncHandler from "express-async-handler";
 import type { RequestHandler } from "express";
 import Book from "../models/book-model";
-// import { type ObjectId } from "mongodb";
+
+import {
+  type ICreateBookBody,
+  type IUpdateBookParams,
+  type IUpdateBookBody,
+} from "../type-definitions";
 import { uploadToCloudinary, deleteFromCloudinary } from "../util/cloudinary";
 
 // @route GET/api/books
@@ -46,7 +51,7 @@ export const getAllBooksPaginated = asyncHandler(async (req, res) => {
       skip = 0;
       page = 1;
     }
-    // console.log(page, skip, total, pages);
+
     books = await Book.find({ title: { $regex: searchTerm, $options: "i" } })
       .sort({ _id: 1 })
       .skip(skip)
@@ -81,7 +86,6 @@ export const getAllBooksPaginated = asyncHandler(async (req, res) => {
 
 // @route GET/api/books/:id
 export const getBookById: RequestHandler = asyncHandler(async (req, res) => {
-  // const book = await validateBook(req.params._id, res);
   if (!isValidObjectId(req.params.id)) {
     res.status(400);
     throw new Error("Invalid book id");
@@ -116,20 +120,11 @@ export const imageUpload: RequestHandler = asyncHandler(async (req, res) => {
   res.status(200).json(req.body);
 });
 
-interface CreateBookBody {
-  title?: string;
-  description?: string;
-  imgUrl?: string;
-  cloudinaryId?: string;
-  author?: string;
-  cover?: HTMLImageElement;
-}
-
 // @route POST/api/books
 export const createBook: RequestHandler<
   unknown,
   unknown,
-  CreateBookBody,
+  ICreateBookBody,
   unknown
 > = asyncHandler(async (req, res) => {
   let imgUrl, cloudinaryId;
@@ -173,23 +168,11 @@ export const createBook: RequestHandler<
   res.status(201).json(book);
 });
 
-interface UpdateBookParams {
-  id: string;
-}
-
-interface UpdateBookBody {
-  title?: string;
-  description?: string;
-  imgUrl?: string;
-  cloudinaryId?: string;
-  author?: string;
-}
-
 // @route PUT/api/books/:id
 export const updateBook: RequestHandler<
-  UpdateBookParams,
+  IUpdateBookParams,
   unknown,
-  UpdateBookBody,
+  IUpdateBookBody,
   unknown
 > = asyncHandler(async (req, res) => {
   if (!isValidObjectId(req.params.id)) {
@@ -275,46 +258,3 @@ export const deleteBook: RequestHandler = asyncHandler(async (req, res) => {
     .status(200)
     .json({ message: `Deleted Book ${req.params.id}${cloudinaryRes}` });
 });
-
-// interface bookShape {
-//   _id: ObjectId;
-//   title?: string;
-//   description?: string;
-//   imgUrl?: string;
-//   cloudinaryId: string;
-//   author?: string;
-//   user?: Types.ObjectId;
-//   userName?: string;
-//   createdAt: Date;
-//   updatedAt: Date;
-// }
-
-// async function validateBook(id: string, res: Response): Promise<bookShape> {
-//   if (!isValidObjectId(id)) {
-//     res.status(400);
-//     throw new Error("Invalid book id");
-//   }
-//   const book = await Book.findById(id);
-//   if (book === undefined || book === null) {
-//     res.status(404);
-//     throw new Error("Book not found");
-//   }
-
-//   return book;
-// }
-
-// RequestHandler<params, res.body, req.body, queries>
-
-// for joining two models
-// async function createModel(trip) {
-//     const result = new Model(trip);
-//     await result.save();
-//     // after creation in order to have id
-//     const user = await User.findById(result.owner);
-//     user.models.push(result._id);
-//     await user.save();
-
-//     return result;
-// }
-
-// .sendStatus || .status.json

@@ -1,17 +1,11 @@
-import type { RequestHandler } from "express";
+import asyncHandler from "express-async-handler";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
-import asyncHandler from "express-async-handler";
-// import { User } from "../models/user-model.js";
+import type { RequestHandler } from "express";
+import type { IRegisterBody, ILoginBody } from "../type-definitions/types.js";
 import User from "../models/user-model.js";
 import env from "../util/validate-env.js";
 const secret = env.JWT_SECRET;
-
-interface IRegisterBody {
-  name?: string;
-  email?: string;
-  password?: string;
-}
 
 // @route POST/api/users/register
 export const registerUser: RequestHandler<
@@ -58,11 +52,6 @@ export const registerUser: RequestHandler<
     throw new Error("Invalid user data");
   }
 });
-
-interface ILoginBody {
-  email?: string;
-  password?: string;
-}
 
 // @route POST/api/users/login
 export const loginUser: RequestHandler<unknown, unknown, ILoginBody, unknown> =
@@ -113,17 +102,11 @@ export const logout: RequestHandler = asyncHandler(async (req, res) => {
     success: true,
     message: "Successful logout",
   });
-  // On the client side, delete the cookie from the browser.
-  // On the server side, set the cookie value to an empty string and set the cookie expiration time to a time in the past.
-  // On the server side, update the refreshtoken stored in your database.
-  // Use this option to log out the user from all devices where they are logged in.
 });
 
 // @route GET/api/users/user
 export const getUser: RequestHandler = asyncHandler(async (req, res) => {
   res.status(200).json(req.user);
-  //   const { _id, name, email } = await User.findById(req.user.id);
-  //   res.status(200).json({ id: _id, name, email });
 });
 
 // @route POST/api/users/update
@@ -221,10 +204,6 @@ export const adminDeleteUser = asyncHandler(async (req, res) => {
   await User.findByIdAndDelete(req.params.id);
   res.status(200).json({ message: "User deleted" });
 });
-
-// interface JwtPayload {
-//   _id: string;
-// }
 
 // Generate JWT
 const generateToken = (id: string): any => {

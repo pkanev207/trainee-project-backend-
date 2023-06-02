@@ -1,4 +1,3 @@
-// import "dotenv/config";
 import type { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import asyncHandler from "express-async-handler";
@@ -6,9 +5,7 @@ import User from "../models/user-model.js";
 import env from "../util/validate-env.js";
 
 const secret = env.JWT_SECRET;
-// interface JwtPayload {
-//   _id: string;
-// }
+
 export const protect = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     let token;
