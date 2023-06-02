@@ -2,24 +2,16 @@
 // import asyncHandler from "express-async-handler";
 
 // export const mailHelper = asyncHandler(async (options) => {
-//   console.log(
-//     process.env.SMTP_HOST,
-//     process.env.SMTP_PORT,
-//     process.env.SMTP_USER,
-//     process.env.SMTP_PASS
-//   );
-//   console.log(options);
-
 //   const transporter = nodemailer.createTransport({
 //     // service: "gmail",
 //     host: "sandbox.smtp.mailtrap.io",
-//     // host: "smtp.gmail.com",
+//     // host: process.env.SMTP_HOST,
 //     // secure: false, // TLS requires secureConnection to be false
 //     // secureConnection: false,
-//     port: 2525,
+//     port: process.env.SMTP_PORT,
 //     auth: {
-//       user: "62ec878cfe600d", // generate ethereal user
-//       pass: "8319c5bbfaec2b", // generate ethereal password
+//       user: process.env.SMTP_USER, // generate ethereal user
+//       pass: process.env.SMTP_PASS, // generate ethereal password
 //     },
 //     // tls: {
 //     //   // ciphers: "SSLv3",
