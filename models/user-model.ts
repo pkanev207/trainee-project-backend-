@@ -1,7 +1,8 @@
 import mongoose from "mongoose";
 import crypto from "crypto";
 
-const EMAIL_PATTERN = /^([a-zA-Z]+)@([a-zA-Z]+)\.([a-zA-Z]+)$/;
+// const EMAIL_PATTERN = /^([a-zA-Z]+)@([a-zA-Z]+)\.([a-zA-Z]+)$/;
+// const EMAIL_PATTERN_V2 = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/
 
 const userSchema = new mongoose.Schema(
   {
@@ -13,12 +14,16 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: [true, "Please add an email"],
       unique: true,
-      validate: {
-        validator(value: string) {
-          return EMAIL_PATTERN.test(value);
-        },
-        message: "Please enter a valid email",
-      },
+      // validate: {
+      //   validator(value: string) {
+      //     return EMAIL_PATTERN.test(value);
+      //   },
+      //   message: "Please enter a valid email",
+      // },
+      match: [
+        /^([a-zA-Z]+)@([a-zA-Z]+)\.([a-zA-Z]+)$/,
+        "Please add a valid email",
+      ],
       select: false,
     },
     password: {
@@ -54,10 +59,26 @@ const userSchema = new mongoose.Schema(
     },
     forgotPasswordToken: String,
     forgotPasswordExpiry: Date,
+    // sequenceId: {  // version
+    //   type: [String],
+    // },
+    // lastProcessedId: { // and publisher has his own db
+    //   type: [String],
+    // },
   },
   {
     timestamps: true,
   }
+  // {
+  //   toJSON: {
+  //     transform(doc, ret, options) {
+  //       ret.id = ret._id;
+  //       delete ret._id;
+  //       delete ret.password;
+  //       delete ret.__v;
+  //     },
+  //   },
+  // }
 );
 
 userSchema.methods.getForgotPasswordToken = function () {
@@ -69,7 +90,6 @@ userSchema.methods.getForgotPasswordToken = function () {
     .digest("hex");
   // time of token 20 minutes
   this.forgotPasswordExpiry = Date.now() + 20 * 60 * 1000;
-
   return forgotToken;
 };
 

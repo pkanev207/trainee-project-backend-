@@ -28,13 +28,8 @@ const express_fileupload_1 = __importDefault(require("express-fileupload"));
     }));
     app.use("/api/users", user_routes_1.default);
     app.use("/api/books", books_routes_1.default);
-    try {
-        const swaggerDocument = js_yaml_1.default.load(fs_1.default.readFileSync("./specs/swagger.yaml", "utf-8"));
-        app.use("/api-docs", swagger_ui_express_1.default.serve, swagger_ui_express_1.default.setup(swaggerDocument));
-    }
-    catch (error) {
-        console.error(error);
-    }
+    const swaggerDocument = js_yaml_1.default.load(fs_1.default.readFileSync("./specs/swagger.yaml", "utf-8"));
+    app.use("/api-docs", swagger_ui_express_1.default.serve, swagger_ui_express_1.default.setup(swaggerDocument));
     app.use((req, res, next) => {
         console.log(req.url);
         next(new Error("Endpoint not found"));

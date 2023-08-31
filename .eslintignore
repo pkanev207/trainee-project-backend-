@@ -3,3 +3,5 @@ tests
 index.js
 *.config.js
 dist
+coverage
+.husky
