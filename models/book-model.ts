@@ -1,5 +1,9 @@
 import mongoose from "mongoose";
 
+// Major articles suggest using and extending the interface from Document mongoose
+// but if you want to define custom methods or relationships you should not use them.
+// e.g interface ApplicationUser extends Document
+
 const URL_PATTERN = /^https?:\/\/.+$/i;
 const bookSchema = new mongoose.Schema(
   {
@@ -47,10 +51,22 @@ const bookSchema = new mongoose.Schema(
       ref: "User",
       default: [],
     },
+    // expiresAt: {
+    //   type: mongoose.Schema.Types.Date,
+    // },
   },
+  // options argument:
   {
     timestamps: true,
   }
+  // {
+  //   toJSON: {
+  //     transform(doc, ret, options) {
+  //       ret.id = ret._id;
+  //       delete ret._id;
+  //     },
+  //   },
+  // }
 );
 
 bookSchema.index(

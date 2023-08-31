@@ -29,18 +29,14 @@ connectDB()
     app.use("/api/users", userRouter);
     app.use("/api/books", booksRouter);
 
-    try {
-      const swaggerDocument = YAML.load(
-        fs.readFileSync("./specs/swagger.yaml", "utf-8")
-      );
-      app.use(
-        "/api-docs",
-        SwaggerUi.serve,
-        SwaggerUi.setup(swaggerDocument as any)
-      );
-    } catch (error) {
-      console.error(error);
-    }
+    const swaggerDocument = YAML.load(
+      fs.readFileSync("./specs/swagger.yaml", "utf-8")
+    );
+    app.use(
+      "/api-docs",
+      SwaggerUi.serve,
+      SwaggerUi.setup(swaggerDocument as any)
+    );
 
     app.use((req, res, next) => {
       console.log(req.url);

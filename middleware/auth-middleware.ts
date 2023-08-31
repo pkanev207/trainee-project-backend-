@@ -6,6 +6,20 @@ import env from "../util/validate-env.js";
 
 const secret = env.JWT_SECRET;
 
+// interface UserPayload {
+//   id: string;
+//   email: string;
+// }
+
+// // Reaching into existing type definition and making modification to it
+// declare global {
+//   namespace Express {
+//     interface Request {
+//       currentUser?: UserPayload;
+//     }
+//   }
+// }
+
 export const protect = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     let token;
@@ -17,6 +31,7 @@ export const protect = asyncHandler(
         // Get token from header
         token = req.headers.authorization.split(" ")[1];
         // Verify token
+        // const decoded = jwt.verify(token, secret) as UserPayload;
         const decoded = jwt.verify(token, secret) as any;
         // Get user from token
         req.user = await User.findById(decoded.id).select("-password");

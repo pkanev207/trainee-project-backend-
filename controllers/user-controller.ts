@@ -7,6 +7,20 @@ import User from "../models/user-model.js";
 import env from "../util/validate-env.js";
 const secret = env.JWT_SECRET;
 
+// interface UserPayload {
+//   id: string;
+//   email: string;
+// }
+
+// // reaching into existing type definition and making modification to it
+// declare global {
+//   namespace Express {
+//     interface Request {
+//       currentUser?: UserPayload;
+//     }
+//   }
+// }
+
 // @route POST/api/users/register
 export const registerUser: RequestHandler<
   unknown,
@@ -91,6 +105,45 @@ export const loginUser: RequestHandler<unknown, unknown, ILoginBody, unknown> =
       throw new Error("Invalid credentials");
     }
   });
+
+// Foy anyone who might have missed it, you need to set the cookie as secure: false
+// on the authController on the backend to create the users using postman or thunder client,
+//  but once you begin testing the refreshToken on the react front-end,
+//  you need to switch the cookie to secure: true,
+//  otherwise it won't work while testing the app.
+
+// // Dave's refresh token
+// let foundUser;
+// const accessToken = jwt.sign(
+//   {
+//     UserInfo: {
+//       username: foundUser.username,
+//       roles: foundUser.roles,
+//     },
+//   },
+//   process.env.ACCESS_TOKEN_SECRET,
+//   { expiresIn: "10s" }
+// );
+
+// const refreshToken = jwt.sign(
+//   { username: foundUser.username },
+//   process.env.REFRESH_TOKEN_SECRET,
+//   {
+//     expiresIn: "20s",
+//   }
+// );
+
+//   // Create secure cookie with refresh token
+//   res.cookie("jwt", refreshtoken, {
+//     httpOnly: true, // accessible only by web server,
+//     secure: true, // https
+//     sameSite: "None", // cross-site cookie
+//     maxAge: 7 * 24 * 60 * 60 * 1000, // cookie expiry
+//   });
+
+//   // Send accessToken containing username and roles
+//   res.json({ accessToken });
+// });
 
 // @route POST/api/users/logout
 export const logout: RequestHandler = asyncHandler(async (req, res) => {
